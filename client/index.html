@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css">
+	<script src="picross.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+</head>
+<body>
+	<div id="room">
+		<button onclick="createRoom()">Make room</button>
+		<ul id="rooms"></ul>
+	</div>
+	<div id="board" class="hid">
+		<table id="table"></table>
+		<p>Board size: <input type="number" id="size"></p>
+		<p id="check"><button onclick="checkAnswer()">Check answer</button></p>
+		<p id="err" style="color:red;"></p>
+		<p><button onclick="startGame()">New Game</button></p>
+		<p class="border">Clicking on a white tile will mark it blue, or true. Clicking a blue tile will turn it white again. Right clicking a tile will mark it grey, or false. Right-clicking a grey tile will turn it white again. Left clicking a grey tile will turn it blue.</p>
+	</div>
+</body>
+</html>
