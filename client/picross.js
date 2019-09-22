@@ -1,30 +1,43 @@
 const socket = io();
+let currBoard;
+let answerCount;
 
 function createRoom() {
 	socket.emit('createRoom');
 }
 
-socket.on('updateRooms', function(roomList) {
-    for(key of roomList) {
-		const roomItem = document.createElement('li');
-        roomItem.textContent = key;
-        // roomLi.onclick = // something about joinRoom
-        document.getElementById("rooms").appendChild(roomItem);
-    }
+function joinRoom() {
+	socket.emit('joinRoom');
+}
+
+socket.on('joinRoom', function() {
+	toVisible();
+	startGame();
 });
 
-let currBoard;
-let answerCount;
+socket.on('updateRooms', function(roomList) {
+	const rooms = document.getElementById("rooms");
+	rooms.textContent = "";
+	for(key of roomList) {
+		const roomItem = document.createElement('li');
+		roomItem.textContent = key;
+		roomItem.onclick = joinRoom;
+		rooms.appendChild(roomItem);
+	}
+});
 
 function startGame() {
-	let size = document.getElementById("size").value;
+	// let size = document.getElementById("size").value;
+	let size = 10;
     let output = document.getElementById("err");
     output.textContent = "";
+	/*
 	if(size == null || size <= 0) {
         output.style.color = "red";
         output.textContent = "Enter a board size.";
         return;
     }
+	*/
 	currBoard = makeBoard(size);
 	const top = getTop(currBoard);
 	const side = getSide(currBoard);
