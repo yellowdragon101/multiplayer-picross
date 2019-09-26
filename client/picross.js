@@ -6,8 +6,9 @@ function createRoom() {
 
 function joinRoom(evn) {
 	const target = evn.target;
-	id = target.dataset.roomid;
+	let id = target.dataset.roomid;
 	socket.emit('joinRoom', id);
+	document.getElementById("roomNum").textContent = `Room ${id}`;
 }
 
 socket.on('initRoom', function(top, side) {
@@ -20,7 +21,7 @@ socket.on('updateRooms', function(roomList) {
 	rooms.textContent = "";
 	for(key of roomList) {
 		const roomItem = document.createElement('li');
-		roomItem.textContent = key;
+		roomItem.textContent = `Room ${key}`;
 		roomItem.dataset.roomid = key;
 		roomItem.addEventListener('click', joinRoom);
 		rooms.appendChild(roomItem);
