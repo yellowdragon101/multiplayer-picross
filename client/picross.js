@@ -11,8 +11,8 @@ function joinRoom(evn) {
 	document.getElementById("roomNum").textContent = `Room ${id}`;
 }
 
-socket.on('initRoom', function(roomID, top, side) {
-	actuallyMakeBoard(roomID, top, side)
+socket.on('initRoom', function(roomData) {
+	actuallyMakeBoard(roomData.id, roomData.top, roomData.side);
 	toVisible();
 });
 
