@@ -32,7 +32,11 @@ io.on('connection', function(socket) {
 		
 		rooms[roomID]["players"][0].emit('joinRoom', roomID);
 		io.emit('updateRooms', Object.keys(rooms));
-		socket.emit('initRoom', rooms[roomID].top, rooms[roomID].side);
+		socket.emit('initRoom', {
+			'id': roomID,
+			'top': rooms[roomID].top,
+			'side': rooms[roomID].side
+		});
 	});
 	socket.on('joinRoom', function(roomID) {
 		console.log(`user joined room ${roomID}`);
