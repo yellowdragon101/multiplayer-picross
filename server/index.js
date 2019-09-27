@@ -18,30 +18,38 @@ io.on('connection', function(socket) {
 	socket.on('updateRooms', function(roomList) {
 		io.emit(Object.keys(roomList));
 	});
-	socket.on('createRoom', function(roomNum) {
-		roomNum = Object.keys(rooms).length + 1;
-		console.log(`room #${roomNum} created`);
-		rooms[roomNum] = {players: [socket], board: [], top: [], side: []};
+	socket.on('createRoom', function() {
+		let roomID = Object.keys(rooms).length + 1;
+		console.log(`room #${roomID} created`);
+		rooms[roomID] = {players: [socket], board: [], top: [], side: [], boardState: []};
 
-		let board = rooms[roomNum]["board"];
-		board = makeBoard(10);
-		rooms[roomNum]["top"] = getTop(board);
-		rooms[roomNum]["side"] = getSide(board);
+		rooms[roomID]["boardState"] = makeBoard2(10);
 		
-		rooms[roomNum]["players"][0].emit('joinRoom', roomNum);
+		let board = rooms[roomID]["board"];
+		board = makeBoard(10);
+		rooms[roomID]["top"] = getTop(board);
+		rooms[roomID]["side"] = getSide(board);
+		
+		rooms[roomID]["players"][0].emit('joinRoom', roomID);
 		io.emit('updateRooms', Object.keys(rooms));
+		socket.emit('initRoom', rooms[roomID].top, rooms[roomID].side);
 	});
 	socket.on('joinRoom', function(roomID) {
 		console.log(`user joined room ${roomID}`);
 		rooms[roomID]["players"] = [socket];
 		for(val of rooms[roomID]["players"]) {
-			val.emit('initRoom', rooms[roomID]["top"], rooms[roomID]["side"]);
+			val.emit(roomID, 'initRoom', rooms[roomID]["top"], rooms[roomID]["side"]);
 		}
 	});
-	socket.on('initRoom', function(top, side) {
-		io.emit(top, side);
+	socket.on('initRoom', function(roomID, top, side) {
+		io.emit(roomID, top, side);
 	});
-	socket.on('updateRoom', function() {
+	socket.on('updateRoom', function(roomID,x,y,clickType,top,side) {
+		rooms[roomID]["boardState"][y][x] = clickType;
+		
+		for(val of rooms[roomID]["players"]) {
+			val.emit(rooms[roomID]["top"],rooms[roomID]["side"],rooms[roomID][boardState]);
+		}
 	});
 	socket.on('disconnect', function() {
 		console.log('user disconnected');
@@ -58,6 +66,17 @@ function makeBoard(size) {
 		board.push([]);
 		for(let x=0;x<size;x++) {
 			board[y][x] = Math.round(Math.random());
+		}
+	}
+	return board;
+}
+
+function makeBoard2(size) {
+	let board = [];
+	for(let y=0;y<size;y++) {
+		board.push([]);
+		for(let x=0;x<size;x++) {
+			board[y][x] = "";
 		}
 	}
 	return board;
@@ -83,4 +102,4 @@ function stubValues(arr) {
 
 function filterZero(arr) {
 	return arr.filter((x) => x != 0);
-}
+}	
